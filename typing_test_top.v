@@ -3,7 +3,6 @@
 module typing_test_top(
         input wire clk,
         input wire [3:0] rows, // PmodJB pins 10 to 7
-        output wire [3:0] cols, // PmodJB pins 4 to 1
         output wire [3:0] Anode_Activate,
         output wire [6:0] LED_out
     );
@@ -16,6 +15,7 @@ module typing_test_top(
         .fast_clk(fast_clk)
     );
   
+    wire [3:0] cols;
     wire [3:0] dec_out;
     wire button_pressed;
         

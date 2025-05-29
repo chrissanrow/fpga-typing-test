@@ -22,11 +22,12 @@ module game(
     // array to hold the 4-digit number of words
     reg [3:0] num_words [0:3];
     integer total_words;
-    reg mode = 0; // 0 => selection mode, 1 => test mode
+    reg [1:0] mode = 2'b00; // 0 => selection mode, 1 => test mode, 2 => result mode
 
     // test metrics
     integer missed = 0;
     integer elapsed_time = 0;
+    integer wpm = 0;
 
     // test word handling
     reg [3:0] curr_word [0:3]; // randomly generated 4-digit word
@@ -59,20 +60,20 @@ module game(
         if (button_rising_edge) begin
             // if B is pressed, reset to mode screen
             if (dec == 4'b1011) begin
-                mode <= 0; // reset to select mode
+                mode <= 2'b00; // reset to select mode
                 current_digit <= 3;
                 missed <= 0;
                 elapsed_time <= 0;
             end
             // SELECT MODE
-            else if (mode == 0) begin
+            else if (mode == 2'b00) begin
                 one_en <= 1;
                 two_en <= 1;
                 three_en <= 1;
                 four_en <= 1;
                 // if A is pressed => begin test
                 if (dec == 4'b1010) begin
-                    mode <= 1;
+                    mode <= 2'b01;
                     current_digit <= 3;
                     missed <= 0;
                     elapsed_time <= 0;
@@ -91,7 +92,7 @@ module game(
                 end
             end
             // TEST MODE
-            else if (mode == 1) begin
+            else if (mode == 2'b01) begin
                 if (dec == curr_word[current_digit]) begin
                     // move to the next digit if there are any remaining
                     if (current_digit > 0) begin
@@ -123,6 +124,8 @@ module game(
                         completed <= completed + 1;
                         if (completed >= total_words) begin
                             // TODO: handle completion of test
+			    mode <= 2'b10;
+			    wpm <= completed / (elapsed_time / 60);
                         end
                     end
                 end
@@ -136,7 +139,7 @@ module game(
 
     // ELAPSED TIME LOGIC
     always @(posedge one_hz_clk) begin
-        if (mode == 1) begin
+        if (mode == 2'b01) begin
             elapsed_time <= elapsed_time + 1;
         end
     end
@@ -144,13 +147,13 @@ module game(
     // DIGIT DISPLAY LOGIC
     always @(*) begin
         // SELECT MODE
-        if (mode == 0) begin
+        if (mode == 2'b00) begin
             digit_one = num_words[3];
             digit_two = num_words[2];
             digit_three = num_words[1];
             digit_four = num_words[0];
         end
-        else if (mode == 1) begin
+        else if (mode == 2'b01) begin
             digit_one = curr_word[3];
             digit_two = curr_word[2];
             digit_three = curr_word[1];

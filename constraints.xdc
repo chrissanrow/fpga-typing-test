@@ -60,7 +60,7 @@ set_property -dict { PACKAGE_PIN U7   IOSTANDARD LVCMOS33 } [get_ports {LED_out[
 set_property -dict { PACKAGE_PIN U2   IOSTANDARD LVCMOS33 } [get_ports {Anode_Activate[0]}]
 set_property -dict { PACKAGE_PIN U4   IOSTANDARD LVCMOS33 } [get_ports {Anode_Activate[1]}]
 set_property -dict { PACKAGE_PIN V4   IOSTANDARD LVCMOS33 } [get_ports {Anode_Activate[2]}]
-set_property -dict { PACKAGE_PIN W4   IOSTANDARD LVCMOS33 } [get_ports {Anode_Activate[3]}
+set_property -dict { PACKAGE_PIN W4   IOSTANDARD LVCMOS33 } [get_ports {Anode_Activate[3]}]
 
 ##Buttons
 #set_property -dict { PACKAGE_PIN U18   IOSTANDARD LVCMOS33 } [get_ports ADJ]
@@ -80,7 +80,7 @@ set_property -dict { PACKAGE_PIN W4   IOSTANDARD LVCMOS33 } [get_ports {Anode_Ac
 #set_property -dict { PACKAGE_PIN H2   IOSTANDARD LVCMOS33 } [get_ports {JA[6]}];#Sch name = JA9
 #set_property -dict { PACKAGE_PIN G3   IOSTANDARD LVCMOS33 } [get_ports {JA[7]}];#Sch name = JA10
 
-Pmod Header JB
+## Pmod Header JB
 set_property -dict { PACKAGE_PIN A14   IOSTANDARD LVCMOS33 } [get_ports {cols[0]}];#Sch name = JB1
 set_property -dict { PACKAGE_PIN A16   IOSTANDARD LVCMOS33 } [get_ports {cols[1]}];#Sch name = JB2
 set_property -dict { PACKAGE_PIN B15   IOSTANDARD LVCMOS33 } [get_ports {cols[2]}];#Sch name = JB3
