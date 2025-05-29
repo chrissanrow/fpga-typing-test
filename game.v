@@ -123,9 +123,9 @@ module game(
 
                         completed <= completed + 1;
                         if (completed >= total_words) begin
-                            // TODO: handle completion of test
-			    mode <= 2'b10;
-			    wpm <= completed / (elapsed_time / 60);
+                                // TODO: handle completion of test
+                            mode <= 2'b10;
+                            wpm <= completed / (elapsed_time / 60);
                         end
                     end
                 end
