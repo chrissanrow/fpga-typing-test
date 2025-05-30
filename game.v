@@ -64,6 +64,9 @@ module game(
                 current_digit <= 3;
                 missed <= 0;
                 elapsed_time <= 0;
+                one_en <= 1;
+                two_en <= 1;
+                three_en <= 1;
             end
             // SELECT MODE
             else if (mode == 2'b00) begin
@@ -72,17 +75,25 @@ module game(
                 three_en <= 1;
                 four_en <= 1;
                 // if A is pressed => begin test
-                if (dec == 4'b1010) begin
+                //TODO: FIX BEING ABLE TO START AT 0
+                // suspicion is that on first run A is shifted in everywhere
+                // and then next run num_words != 0 succeeds
+                if (dec == 4'b1010 &&
+                    num_words[3] != 4'b0000 &&
+                    num_words[2] != 4'b0000 &&
+                    num_words[1] != 4'b0000 &&
+                    num_words[0] != 4'b0000)
+                begin
                     mode <= 2'b01;
                     current_digit <= 3;
                     missed <= 0;
                     elapsed_time <= 0;
 
                     total_words <= num_words[0] * 1000 + num_words[1] * 100 + num_words[2] * 10 + num_words[3];
-                    curr_word[0] <= rand_one;
-                    curr_word[1] <= rand_two;
-                    curr_word[2] <= rand_three;
-                    curr_word[3] <= rand_four;
+                    curr_word[0] <= rand_four;
+                    curr_word[1] <= rand_three;
+                    curr_word[2] <= rand_two;
+                    curr_word[3] <= rand_one;
                 end
                 else begin
                     num_words[3] <= num_words[2];
@@ -99,13 +110,13 @@ module game(
                         current_digit <= current_digit - 1;
                         // disable completed digit
                         if (current_digit == 3) begin
-                            four_en <= 0;
+                            one_en <= 0;
                         end
                         else if (current_digit == 2) begin
-                            three_en <= 0;
+                            two_en <= 0;
                         end
                         else if (current_digit == 1) begin
-                            two_en <= 0;
+                            three_en <= 0;
                         end
                     end
                     else begin
@@ -116,14 +127,14 @@ module game(
                         curr_word[3] <= rand_four;
 
                         // re-enable digits
-                        four_en <= 1;
-                        three_en <= 1;
+                        one_en <= 1;
                         two_en <= 1;
+                        three_en <= 1;
                         current_digit <= 3;
 
                         completed <= completed + 1;
                         if (completed >= total_words) begin
-                                // TODO: handle completion of test
+                            // TODO: handle completion of test
                             mode <= 2'b10;
                             wpm <= completed / (elapsed_time / 60);
                         end

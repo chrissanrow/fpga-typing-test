@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module typing_test_top(
+module hw_test(
         input wire clk,
         input wire [3:0] rows, // PmodJB pins 10 to 7
         output wire [3:0] cols,
@@ -15,7 +15,7 @@ module typing_test_top(
         .one_hz_clk(one_hz_clk),
         .fast_clk(fast_clk)
     );
-    
+  
     wire [3:0] dec_out;
     wire button_pressed;
         
@@ -37,33 +37,19 @@ module typing_test_top(
         .rand_four(rand_four)
     );
     
-    wire one_en, two_en, three_en, four_en;
-    wire [3:0] digit_one, digit_two, digit_three, digit_four;
-    
-    game game_inst(
-        .clk(clk),
-        .one_hz_clk(one_hz_clk),
-        .dec(dec_out),
-        .button_pressed(button_pressed),
-        .rand_one(rand_one),
-        .rand_two(rand_two),
-        .rand_three(rand_three),
-        .rand_four(rand_four),
-        .one_en(one_en),
-        .two_en(two_en),
-        .three_en(three_en),
-        .four_en(four_en),
-        .digit_one(digit_one),
-        .digit_two(digit_two),
-        .digit_three(digit_three),
-        .digit_four(digit_four)
-    );
+    reg one_en, two_en, three_en, four_en;
+    initial begin
+        one_en <= 1;
+        two_en <= 1;
+        three_en <= 1;
+        four_en <= 1;
+    end
     
     basys3display disp_inst(
-        .digit_one(digit_one),
-        .digit_two(digit_two),
-        .digit_three(digit_three),
-        .digit_four(digit_four),
+        .digit_one(button_pressed),
+        .digit_two(button_pressed),
+        .digit_three(button_pressed),
+        .digit_four(dec_out),
         .fast_clk(fast_clk),
         .one_en(one_en),
         .two_en(two_en),
