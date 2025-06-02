@@ -8,12 +8,13 @@ module typing_test_top(
         output wire [6:0] LED_out
     );
     
-    wire one_hz_clk, fast_clk;
+    wire one_hz_clk, fast_clk, slower_clk;
     
     clock_divider cd_inst (
         .clk(clk),
         .one_hz_clk(one_hz_clk),
-        .fast_clk(fast_clk)
+        .fast_clk(fast_clk),
+        .slower_clk(slower_clk)
     );
     
     wire [3:0] dec_out;

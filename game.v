@@ -36,13 +36,9 @@ module game(
 
     // edge detection register for button_pressed
     reg button_pressed_last = 0;
-    wire button_rising_edge;
-    assign button_rising_edge = button_pressed & ~button_pressed_last;
-
-    always @(posedge clk) begin
-        button_pressed_last <= button_pressed;
-    end
-
+    reg button_rising_edge;
+    //assign button_rising_edge = button_pressed & ~button_pressed_last;
+    
     initial begin
         num_words[3] = 4'b0000;
         num_words[2] = 4'b0000;
@@ -57,10 +53,20 @@ module game(
 
     // MAIN GAME LOGIC
     always @(posedge clk) begin
+        button_rising_edge <= button_pressed & ~button_pressed_last;
+        button_pressed_last <= button_pressed;
         if (button_rising_edge) begin
             // if B is pressed, reset to mode screen
             if (dec == 4'b1011) begin
-                mode <= 2'b00; // reset to select mode
+                if(mode == 2'b00) begin // if already in mode, reset num_words
+                    num_words[3] = 4'b0000;
+                    num_words[2] = 4'b0000;
+                    num_words[1] = 4'b0000;
+                    num_words[0] = 4'b0000;
+                end
+                else begin
+                    mode <= 2'b00; // reset to select mode
+                end
                 current_digit <= 3;
                 missed <= 0;
                 elapsed_time <= 0;
@@ -79,10 +85,10 @@ module game(
                 // suspicion is that on first run A is shifted in everywhere
                 // and then next run num_words != 0 succeeds
                 if (dec == 4'b1010 &&
-                    num_words[3] != 4'b0000 &&
-                    num_words[2] != 4'b0000 &&
-                    num_words[1] != 4'b0000 &&
-                    num_words[0] != 4'b0000)
+                    !(num_words[3] == 4'b0000 &&
+                    num_words[2] == 4'b0000 &&
+                    num_words[1] == 4'b0000 &&
+                    num_words[0] == 4'b0000))
                 begin
                     mode <= 2'b01;
                     current_digit <= 3;
@@ -133,6 +139,7 @@ module game(
                         current_digit <= 3;
 
                         completed <= completed + 1;
+                        
                         if (completed >= total_words) begin
                             // TODO: handle completion of test
                             mode <= 2'b10;
