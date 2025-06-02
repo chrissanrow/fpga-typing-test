@@ -5,7 +5,9 @@ module typing_test_top(
         input wire [3:0] rows, // PmodJB pins 10 to 7
         output wire [3:0] cols,
         output wire [3:0] Anode_Activate,
-        output wire [6:0] LED_out
+        output wire [6:0] LED_out,
+        output wire [1:0] SSD_Anode_Activate,
+        output wire [6:0] SSD_LED_out
     );
     
     wire one_hz_clk, fast_clk, slower_clk;
@@ -72,6 +74,19 @@ module typing_test_top(
         .four_en(four_en),
         .Anode_Activate(Anode_Activate),
         .LED_out(LED_out)
+    );
+
+    // FIXME: must alter game module to support 2-digit display
+    // for now, only display the first two digits (same as basys3display)
+
+    ssd_display ssd_inst(
+        .digit_one(digit_one),
+        .digit_two(digit_two),
+        .fast_clk(fast_clk),
+        .one_en(one_en),
+        .two_en(two_en),
+        .SSD_Anode_Activate(SSD_Anode_Activate),
+        .SSD_LED_out(SSD_LED_out)
     );
     
 endmodule

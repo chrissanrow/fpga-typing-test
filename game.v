@@ -13,6 +13,10 @@ module game(
     output reg two_en,
     output reg three_en, 
     output reg four_en,
+    output reg acc_one_en, // enable each digit for accuracy
+    output reg acc_two_en,
+    output reg acc_digit_one, // accuracy digits
+    output reg acc_digit_two,
     output reg [3:0] digit_one, // value of each digit
     output reg [3:0] digit_two,
     output reg [3:0] digit_three,
@@ -28,10 +32,12 @@ module game(
     integer missed = 0;
     integer elapsed_time = 0;
     integer wpm = 0;
+    integer accuracy = 0; // accuracy percentage
 
     // test word handling
     reg [3:0] curr_word [0:3]; // randomly generated 4-digit word
     integer completed = 0; // tracks number of sets that have been progressed
+    integer completed_digits = 0; // tracks number of digits that have been completed
     integer current_digit; // current digit of the user
 
     // edge detection register for button_pressed
@@ -48,6 +54,8 @@ module game(
         two_en = 1;
         three_en = 1;
         four_en = 1;
+        acc_one_en = 0;
+        acc_two_en = 0;
         current_digit = 3;
     end
 
@@ -67,12 +75,21 @@ module game(
                 else begin
                     mode <= 2'b00; // reset to select mode
                 end
+
+                // reset all game variables
                 current_digit <= 3;
+                completed_digits <= 0;
+                completed <= 0;
+                accuracy <= 0;
+                acc_digit_one <= 0;
+                acc_digit_two <= 0;
                 missed <= 0;
                 elapsed_time <= 0;
                 one_en <= 1;
                 two_en <= 1;
                 three_en <= 1;
+                acc_one_en <= 0;
+                acc_two_en <= 0;
             end
             // SELECT MODE
             else if (mode == 2'b00) begin
@@ -80,10 +97,11 @@ module game(
                 two_en <= 1;
                 three_en <= 1;
                 four_en <= 1;
+
+                acc_one_en <= 0;
+                acc_two_en <= 0;
+
                 // if A is pressed => begin test
-                //TODO: FIX BEING ABLE TO START AT 0
-                // suspicion is that on first run A is shifted in everywhere
-                // and then next run num_words != 0 succeeds
                 if (dec == 4'b1010 &&
                     !(num_words[3] == 4'b0000 &&
                     num_words[2] == 4'b0000 &&
@@ -94,6 +112,9 @@ module game(
                     current_digit <= 3;
                     missed <= 0;
                     elapsed_time <= 0;
+
+                    acc_one_en <= 1;
+                    acc_two_en <= 1;
 
                     total_words <= num_words[0] * 1000 + num_words[1] * 100 + num_words[2] * 10 + num_words[3];
                     curr_word[0] <= rand_four;
@@ -110,7 +131,26 @@ module game(
             end
             // TEST MODE
             else if (mode == 2'b01) begin
+
+                if (completed_digits != 0) begin
+                    accuracy <= (completed_digits - missed) * 100 / completed_digits;
+                end
+                else begin
+                    accuracy <= 0; // avoid division by zero
+                end
+
+                //FIXME: handle 100% accuracy
+                if (accuracy >= 100) begin
+                    acc_digit_one <= 4'b1010;
+                    acc_digit_two <= 4'b1011;
+                end
+                else begin
+                    acc_digit_two <= accuracy % 10; // ones place
+                    acc_digit_one <= (accuracy % 100) - acc_digit_two; // tens place
+                end
+
                 if (dec == curr_word[current_digit]) begin
+                    completed_digits <= completed_digits + 1;
                     // move to the next digit if there are any remaining
                     if (current_digit > 0) begin
                         current_digit <= current_digit - 1;
@@ -152,6 +192,15 @@ module game(
                     missed <= missed + 1;
                 end
             end
+            // RESULT MODE
+            else if (mode == 2'b10) begin
+                //display words per minute
+                // FOR NOW, just use two digits for WPM
+                one_en <= 0;
+                two_en <= 0;
+                three_en <= 1;
+                four_en <= 1;
+            end
         end
     end
 
@@ -176,6 +225,11 @@ module game(
             digit_two = curr_word[2];
             digit_three = curr_word[1];
             digit_four = curr_word[0];
+        end
+        else if (mode == 2'b10) begin
+            // RESULT MODE
+            digit_three = (wpm / 10) - (wpm % 10);
+            digit_four = wpm % 10;
         end
     end
 endmodule
