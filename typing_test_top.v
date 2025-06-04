@@ -6,17 +6,16 @@ module typing_test_top(
         output wire [3:0] cols,
         output wire [3:0] Anode_Activate,
         output wire [6:0] LED_out,
-        output wire [1:0] SSD_Anode_Activate,
+        output wire SSD_Anode_Activate,
         output wire [6:0] SSD_LED_out
     );
     
-    wire one_hz_clk, fast_clk, slower_clk;
+    wire one_hz_clk, fast_clk;
     
     clock_divider cd_inst (
         .clk(clk),
         .one_hz_clk(one_hz_clk),
-        .fast_clk(fast_clk),
-        .slower_clk(slower_clk)
+        .fast_clk(fast_clk)
     );
     
     wire [3:0] dec_out;
@@ -42,6 +41,8 @@ module typing_test_top(
     
     wire one_en, two_en, three_en, four_en;
     wire [3:0] digit_one, digit_two, digit_three, digit_four;
+    wire acc_one_en, acc_two_en;
+    wire [3:0] acc_digit_one, acc_digit_two;
     
     game game_inst(
         .clk(clk),
@@ -56,6 +57,10 @@ module typing_test_top(
         .two_en(two_en),
         .three_en(three_en),
         .four_en(four_en),
+        .acc_one_en(acc_one_en),
+        .acc_two_en(acc_two_en),
+        .acc_digit_one(acc_digit_one),
+        .acc_digit_two(acc_digit_two),
         .digit_one(digit_one),
         .digit_two(digit_two),
         .digit_three(digit_three),
@@ -76,15 +81,12 @@ module typing_test_top(
         .LED_out(LED_out)
     );
 
-    // FIXME: must alter game module to support 2-digit display
-    // for now, only display the first two digits (same as basys3display)
-
     ssd_display ssd_inst(
-        .digit_one(digit_one),
-        .digit_two(digit_two),
+        .digit_one(acc_digit_one),
+        .digit_two(acc_digit_two),
         .fast_clk(fast_clk),
-        .one_en(one_en),
-        .two_en(two_en),
+        .one_en(acc_one_en),
+        .two_en(acc_two_en),
         .SSD_Anode_Activate(SSD_Anode_Activate),
         .SSD_LED_out(SSD_LED_out)
     );

@@ -9,7 +9,7 @@ module decoder(
     );
 
     parameter SCAN_INTERVAL = 100_000;  // 1ms @ 100MHz
-    parameter SAMPLE_DELAY = 2_000_000;     // 50us delay for row to settle
+    parameter SAMPLE_DELAY = 3_000_000; 
 
     reg [30:0] timer = 0;
     reg [1:0] col_select = 0;
@@ -79,7 +79,6 @@ module decoder(
             
             if (row == 4'b1111 && button_pressed == 1) begin
                 button_pressed <= 0;
-                dec_out <= 4'b0001;
             end
         end
     end
