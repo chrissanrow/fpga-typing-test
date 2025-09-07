@@ -16,4 +16,4 @@ Following the completion of a single test, the 7-segment display will temporaril
 
 # Building this Project
 
-...
+This project was synthesized utilizing Vivado software on an FPGA board.
